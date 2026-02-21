@@ -1,12 +1,11 @@
-````markdown
 # CARLA RGB Camera Fault Injection Testbench (Fog + Low-Light + Flicker) with UDP Brake Controller
 
 This repository provides a fault-injection testbench for evaluating the robustness of an RGB-camera-based pedestrian sensing and emergency response loop in CARLA. The project injects perception-relevant faults through CARLA weather and lighting controls (fog, night conditions, exposure instability, and optional street-light flicker), publishes telemetry over UDP, and uses an external controller process to issue safety actions (`brake`, `slowdown`, `resume`) based on perceived pedestrian proximity.
 
 The system is split into two Python programs:
 
-- **Simulation node (CARLA + Pygame):** spawns and runs the ego vehicle, configures adverse sensing conditions, renders the front RGB camera, performs a simple pedestrian detection proxy, detects collisions, and streams telemetry to UDP.
-- **Controller node (UDP listener):** receives telemetry, applies decision logic, and sends driving commands back to the simulation over UDP.
+- **Simulation node (CARLA + Pygame):** Spawns and runs the ego vehicle, configures adverse sensing conditions, renders the front RGB camera, performs a simple pedestrian detection proxy, detects collisions, and streams telemetry to UDP.
+- **Controller node (UDP listener):** Receives telemetry, applies decision logic, and sends driving commands back to the simulation over UDP.
 
 ---
 
@@ -22,7 +21,7 @@ Instead of altering pixel buffers directly, this project injects faults by manip
 2. **Exposure instability (temporal sensor perturbation)**
    - The camera runs in manual exposure mode.
    - `exposure_compensation` is periodically randomized to simulate exposure oscillation or miscalibration.
-   - The detection proxy can be configured to drop out under severe underexposure (see Detection Proxy).
+   - The detection proxy can be configured to drop out under severe underexposure (see **Detection Proxy**).
 
 3. **Atmospheric degradation (fog scattering / attenuation)**
    - Heavy fog density reduces contrast and effective range.
@@ -38,25 +37,20 @@ Instead of altering pixel buffers directly, this project injects faults by manip
 
 ### UDP Data Flow
 
-- **Simulation → Controller:** telemetry sent to UDP port `9000`
-- **Controller → Simulation:** commands sent to UDP port `9001`
+- **Simulation → Controller:** Telemetry sent to UDP port `9000`
+- **Controller → Simulation:** Commands sent to UDP port `9001`
 
-The separation allows treating the simulation node as “vehicle + perception under fault injection” and the controller as an external “decision and actuation module.”
+The separation allows treating the simulation node as a combined vehicle + perception stack operating under injected faults, and the controller as an external decision and actuation module.
 
 ---
 
 ## Repository Contents
-
-Suggested layout:
 
 ```text
 .
 ├── simulation.py   # CARLA simulation, sensors, weather/lighting fault injection, telemetry sender, command receiver
 ├── controller.py   # UDP controller, decision logic, command sender
 └── README.md
-````
-
----
 
 ## Requirements
 
